@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sqlite3
+# import sh
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, g
 
@@ -69,6 +70,7 @@ def login_user(username, ip=None):
         ]
     )
     g.db.commit()
+    # sh.ipset('add', 'logged', ip)
 
 
 def logout_user(ip=None):
@@ -77,15 +79,20 @@ def logout_user(ip=None):
         "UPDATE users SET logged_in=0 WHERE ip=?", [ip]
     )
     g.db.commit()
+    # sh.ipset('del', 'logged', ip)
 
 
 @app.route("/", defaults={'path': ''})
 @app.route("/<path:path>")
 def redirection_page(path):
+    user = get_user()
+    if user.logged_in:
+        return redirect("/wireless/succeed.html")
+
     host = request.headers.get("Host")
     if host not in ('localhost', 'net.tsinghua.edu.cn', 'localhost:5000'):
         redir_url = "http://{}/{}".format(host, path)
-        return redirect("/wireless/?url=%s" % redir_url)
+        return redirect("http://localhost:5000/wireless/?url=%s" % redir_url)
 
     return redirect("/wireless/")
 
