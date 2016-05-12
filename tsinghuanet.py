@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sqlite3
-# import sh
+import sh
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, g
 
@@ -70,7 +70,7 @@ def login_user(username, ip=None):
         ]
     )
     g.db.commit()
-    # sh.ipset('add', 'logged', ip)
+    sh.ipset('add', 'logged', ip)
 
 
 def logout_user(ip=None):
@@ -79,22 +79,22 @@ def logout_user(ip=None):
         "UPDATE users SET logged_in=0 WHERE ip=?", [ip]
     )
     g.db.commit()
-    # sh.ipset('del', 'logged', ip)
+    sh.ipset('del', 'logged', ip)
 
 
-@app.route("/", defaults={'path': ''})
-@app.route("/<path:path>")
+@app.route("/", defaults={'path': ''}, methods=['GET', 'POST', 'HEAD', 'PUT', 'DELETE', 'OPTIONS'])
+@app.route("/<path:path>", methods=['GET', 'POST', 'HEAD', 'PUT', 'DELETE', 'OPTIONS'])
 def redirection_page(path):
     user = get_user()
     if user.logged_in:
-        return redirect("/wireless/succeed.html")
+        return redirect("http://net.tsinghua.edu.cn/wireless/succeed.html")
 
     host = request.headers.get("Host")
     if host not in ('localhost', 'net.tsinghua.edu.cn', 'localhost:5000'):
         redir_url = "http://{}/{}".format(host, path)
-        return redirect("http://localhost:5000/wireless/?url=%s" % redir_url)
+        return redirect("http://net.tsinghua.edu.cn/wireless/?url=%s" % redir_url)
 
-    return redirect("/wireless/")
+    return redirect("http://net.tsinghua.edu.cn/wireless/")
 
 
 @app.route("/wireless/")
@@ -142,8 +142,8 @@ def set_header(resp):
 
 
 if __name__ == "__main__":
-    app.debug = True
-    # app.run(port=80)
-    app.run()
+    app.debug = False
+    app.run(host='0.0.0.0', port=80)
+    # app.run()
 
 # vim: ts=4 sw=4 sts=4 expandtab
