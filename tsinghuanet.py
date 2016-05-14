@@ -71,7 +71,10 @@ def login_user(username, ip=None):
         ]
     )
     g.db.commit()
-    sh.ipset('add', 'logged', ip)
+    try:
+        sh.ipset('add', 'logged', ip)
+    except:
+        return
 
 
 def logout_user(ip=None):
@@ -80,7 +83,10 @@ def logout_user(ip=None):
         "UPDATE users SET logged_in=0 WHERE ip=?", [ip]
     )
     g.db.commit()
-    sh.ipset('del', 'logged', ip)
+    try:
+        sh.ipset('del', 'logged', ip)
+    except:
+        return
 
 
 @app.route("/", defaults={'path': ''}, methods=['GET', 'POST', 'HEAD', 'PUT', 'DELETE', 'OPTIONS'])
