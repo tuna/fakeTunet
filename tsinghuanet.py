@@ -94,12 +94,7 @@ def redirection_page(path):
     host = request.headers.get("Host")
     if host not in ('localhost', 'net.tsinghua.edu.cn', 'localhost:5000'):
         redir_url = "http://{}/{}".format(host, path)
-        if re.match(r'/android.+mobile|avantgo|bada\/|blackberry'
-                    r'|blazer|compal|elaine|fennec|hiptop|iemobile;'
-                    r'|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront'
-                    r'|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker'
-                    r'|pocket|psp|symbian|treo|up\.(browser|link)|vodafone'
-                    r'|wap|windows (ce|phone)|xda|xiino/i', useragent):
+        if re.findall(r'android|iphone|wap|windows phone|blackberry', useragent, re.I):
             return redirect(
                 "http://net.tsinghua.edu.cn/wireless/phone.html?url=%s" % redir_url
             )
