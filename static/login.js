@@ -193,9 +193,7 @@ function do_login() {
         return;
     }
     
-    //var topost = "action=login&username=" + uname + "&password={MD5_HEX}" + CryptoJS.MD5(pass) +
-    var topost = "action=login&username=" + uname + "&password={MD5_HEX}" + hex_md5(pass) +
-        "&ac_id="+ac_id;
+    var topost = "action=login&username=" + uname + "&ac_id="+ac_id;
 	//alert(topost);
     //var res = post('/do_login.php', topost);
     $.post("/do_login.php", topost, function(res) {
@@ -233,7 +231,6 @@ function do_login() {
                         {
                                 alert(res+"("+msg111+")");
                         }
-
         }
     }); 
 	return false;
