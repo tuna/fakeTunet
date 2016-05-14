@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sqlite3
 import sh
+import re
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, g
 
@@ -89,9 +90,19 @@ def redirection_page(path):
     if user.logged_in:
         return redirect("http://net.tsinghua.edu.cn/wireless/succeed.html")
 
+    useragent = request.headers.get('User-Agent')
     host = request.headers.get("Host")
     if host not in ('localhost', 'net.tsinghua.edu.cn', 'localhost:5000'):
         redir_url = "http://{}/{}".format(host, path)
+        if re.match(r'/android.+mobile|avantgo|bada\/|blackberry'
+                    r'|blazer|compal|elaine|fennec|hiptop|iemobile;'
+                    r'|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|netfront'
+                    r'|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker'
+                    r'|pocket|psp|symbian|treo|up\.(browser|link)|vodafone'
+                    r'|wap|windows (ce|phone)|xda|xiino/i', useragent):
+            return redirect(
+                "http://net.tsinghua.edu.cn/wireless/phone.html?url=%s" % redir_url
+            )
         return redirect("http://net.tsinghua.edu.cn/wireless/?url=%s" % redir_url)
 
     return redirect("http://net.tsinghua.edu.cn/wireless/")
@@ -100,6 +111,11 @@ def redirection_page(path):
 @app.route("/wireless/")
 def login_page():
     return render_template("wifi.html")
+
+
+@app.route("/wireless/phone.html")
+def phone_login_page():
+    return render_template("phone.html")
 
 
 @app.route("/wireless/succeed.html")
@@ -142,8 +158,8 @@ def set_header(resp):
 
 
 if __name__ == "__main__":
-    app.debug = False
-    app.run(host='0.0.0.0', port=80)
+    app.debug = True
+    app.run(host='0.0.0.0', port=8000)
     # app.run()
 
 # vim: ts=4 sw=4 sts=4 expandtab
