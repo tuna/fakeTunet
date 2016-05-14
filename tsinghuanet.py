@@ -139,7 +139,7 @@ def user_info():
     return ""
 
 
-@app.route('/cgi-bin/srun_portal', methods=["POST"])
+@app.route('/cgi-bin/srun_portal', methods=["POST", "GET"])
 def srunportal():
     action = request.args.get("action")
     if action == "login":
