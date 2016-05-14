@@ -147,7 +147,7 @@ def srunportal():
         return "Login is successful."
     else:
         logout_user()
-        return "Logout is successful."
+        return "logout_ok"
 
 
 @app.route("/do_login.php", methods=["POST"])
