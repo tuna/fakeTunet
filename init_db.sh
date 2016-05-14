@@ -1,2 +1,2 @@
 #!/bin/bash
-sqlite3 user.db < schema.sql
+sqlite3 users.db < schema.sql
