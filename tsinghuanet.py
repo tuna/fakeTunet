@@ -92,7 +92,7 @@ def redirection_page(path):
 
     useragent = request.headers.get('User-Agent')
     host = request.headers.get("Host")
-    if host not in ('localhost', 'net.tsinghua.edu.cn', 'localhost:5000'):
+    if host not in ('localhost', 'net.tsinghua.edu.cn', 'localhost:5000', '166.111.204.120'):
         redir_url = "http://{}/{}".format(host, path)
         if re.findall(r'android|iphone|wap|windows phone|blackberry', useragent, re.I):
             return redirect(
@@ -118,14 +118,30 @@ def login_succeed():
     return render_template("succeed.html")
 
 
-@app.route("/rad_user_info.php", methods=["POST"])
+@app.route("/rad_user_info.php", methods=["POST", "GET"])
 def user_info():
     user = get_user()
-    username = user.username
-    ontime = user.login_time
-    nowtime = datetime.now().strftime("%s")
-    usage = str(5*1000*1000*1000)
-    return ",".join([username, ontime, nowtime, "0", "0", "0", usage])
+    if user.logged_in:
+        username = user.username
+        ontime = user.login_time
+        nowtime = datetime.now().strftime("%s")
+        usage = str(5*1000*1000*1000)
+        return ",".join(
+            [username, ontime, nowtime, "0", "0", "0",
+             usage, "0", user.ipaddr, "0", '', '0.003000', '0']
+        )
+    return ""
+
+
+@app.route('/cgi-bin/srun_portal', methods=["POST"])
+def srunportal():
+    action = request.args.get("action")
+    if action == "login":
+        login_user(request.form.get("user_name"))
+        return "Login is successful."
+    else:
+        logout_user()
+        return "Logout is successful."
 
 
 @app.route("/do_login.php", methods=["POST"])
